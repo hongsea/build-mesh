@@ -1,0 +1,57 @@
+#!/bin/bash
+clear
+INTERFACE=$(pwd)/interface.cvs
+
+getInterface(){
+    echo "Which interface that you use for mesh network [SELECT]:"
+    select OPTION in $(ip -o link show | awk -F': ' '{print $2}') Exit
+    do
+        echo "Interface $OPTION selected build mesh network."
+        read -p  "Do you want continue [Y/n]: " YN
+        if [[ -z ${YN} ]]; then
+            echo "You not select, mean that you select y."
+            getIPAddress
+        elif [[ ${YN} == Y || ${YN} == y ]]; then
+            echo "You selected y"
+            getIPAddress
+        elif [[ ${YN} == N || ${YN} == n ]]; then 
+            echo "You select n"
+        else 
+            echo "select again."
+            getIPAddress
+        fi 
+    done
+}
+getIPAddress(){
+    echo "Which IP that you use [SELECT]"
+    echo "1. 192.168.0.0/24"
+    echo "2. 172.16.0.0/24"
+    read -p "[Default 1]: " NUM
+    if [[ -z ${NUM} ]]; then
+        echo "You select default"
+        echo "192.168.0.0/24"
+        GET192="192.168.0.0/24"
+        setStaticIP ${GET192}
+    elif [[ ${NUM} == 1 ]];then
+        echo "1. 192.168.0.0/24"
+    elif [[ ${NUM} == 2 ]];then
+        GET172="172.16.0.0/24"
+        setStaticIP ${GET172}
+    else
+        echo "Please select again"
+        getIPAddress
+    fi 
+}
+setStaticIP(){
+    GETIP=$1
+    IPTYPE=$(echo ${GETIP} | awk -F'.' '{print $1}')
+    if [[ ${IPTYPE} == 172 ]]; then
+        echo "typeof ip: ${IPTYPE} " 
+    elif [[ ${IPTYPE} == 192 ]]; then
+        echo "typeof ip: ${IPTYPE} " 
+    fi 
+}
+# buildMesh(){
+
+# }
+getInterface
